@@ -1,0 +1,25 @@
+---
+# defaults file for win_csp_cadesplugin
+win_csp_cadesplugin_files: "{{ role_path }}/files"
+win_csp_cadesplugin_copy_path: 'C:\temp\csp\'
+win_csp_cadeplugin_regedit_path_64: 'HKLM:\SOFTWARE\Crypto Pro\Cryptography\CurrentVersion\Parameters'
+win_csp_cadeplugin_regedit_path_32: 'HKLM:\SOFTWARE\WOW6432Node\Crypto Pro\Cryptography\CurrentVersion\Parameters'
+win_csp_cadeplugin_regedit_settings_csp:
+  - path: "{{ win_csp_cadeplugin_regedit_path_64 }}"
+    name: tls_client_disable_revocation_check
+    data: '1'
+  - path: "{{ win_csp_cadeplugin_regedit_path_64 }}"
+    name: tls_client_disable_self_certificate_usage_validation
+    data: '1'
+  - path: "{{ win_csp_cadeplugin_regedit_path_64 }}"
+    name: tls_client_disable_legacy_cipher_suites
+    data: '0'
+  # - path: "{{ win_csp_cadeplugin_regedit_path_32 }}"
+  #   name: tls_client_disable_revocation_check
+  #   data: '1'
+  # - path: "{{ win_csp_cadeplugin_regedit_path_32 }}"
+  #   name: tls_client_disable_self_certificate_usage_validation
+  #   data: '1'
+  # - path: "{{ win_csp_cadeplugin_regedit_path_32 }}"
+  #   name: tls_client_disable_legacy_cipher_suites
+  #   data: '0'

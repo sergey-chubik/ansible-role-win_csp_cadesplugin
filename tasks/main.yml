@@ -1,0 +1,49 @@
+---
+# tasks file for win_csp_cadesplugin
+
+- name: win_csp_cadeplugin | Copy install packages in directory temp
+  win_copy:
+    src: "{{ win_csp_cadesplugin_files }}/{{ item }}"
+    dest: "{{ win_csp_cadesplugin_copy_path }}"
+  loop:
+    - CSPSetup.exe
+    - cadesplugin.exe
+    - TrustedSites_CAdESplugin.reg
+    - OID.reg
+
+- name: win_csp_cadeplugin | Install CSP
+  win_package:
+    path: "{{ win_csp_cadesplugin_copy_path }}CSPSetup.exe"
+    product_id: '{407E5BA7-6406-40BF-A4DC-3654B8F584C1}'
+    arguments: '-kc kc1 -lang rus -root -silent -nodlg -noreboot -args /qn'
+    state: present
+
+- name: win_csp_cadeplugin | Install cadesplugin
+  win_package:
+    path: "{{ win_csp_cadesplugin_copy_path }}cadesplugin.exe"
+    product_id: '{E12CC7EE-36B7-4AAA-924E-2F5CD75BCECF}'
+    arguments: '-silent -norestart -cadesargs ADDNPCADES=1'
+    state: present
+
+- name: win_csp_cadeplugin | Update registry for settings CSP
+  win_regedit:
+    path: "{{ item.path }}"
+    name: "{{ item.name }}"
+    data: "{{ item.data }}"
+    type: dword
+  loop: "{{ win_csp_cadeplugin_regedit_settings_csp }}"
+
+- name: win_csp_cadeplugin | Merge in file TrustedSites to registry
+  win_regmerge:
+    path: "{{ win_csp_cadesplugin_copy_path }}TrustedSites_CAdESplugin.reg"
+    compare_to: HKCU:\Software\Crypto Pro\CAdESplugin
+
+- name: win_csp_cadeplugin | Merge in file OID.reg to registry
+  win_regmerge:
+    path: "{{ win_csp_cadesplugin_copy_path }}OID.reg"
+    compare_to: HKLM:\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptDllFindOIDInfo
+
+- name: win_csp_cadeplugin | Remove directory temp
+  win_file:
+    path: "{{ win_csp_cadesplugin_files }}"
+    state: absent
